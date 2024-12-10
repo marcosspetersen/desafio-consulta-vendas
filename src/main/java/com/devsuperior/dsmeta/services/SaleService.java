@@ -7,8 +7,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import com.devsuperior.dsmeta.dto.ReportDTO;
 import com.devsuperior.dsmeta.dto.SummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.devsuperior.dsmeta.dto.SaleMinDTO;
@@ -20,8 +23,6 @@ public class SaleService {
 
 	@Autowired
 	private SaleRepository repository;
-    @Autowired
-    private SaleRepository saleRepository;
 
 	public SaleMinDTO findById(Long id) {
 		Optional<Sale> result = repository.findById(id);
@@ -29,11 +30,19 @@ public class SaleService {
 		return new SaleMinDTO(entity);
 	}
 
-	public List<SummaryDTO> seachSalesByDate(String minDate, String maxDate) {
+	public Page<ReportDTO> searchSalesReport(String minDate, String maxDate, String name, Pageable pageable) {
 		LocalDate finalDate = convertFinalDate(maxDate);
 		LocalDate startDate = convertInitialDate(minDate, finalDate);
 
-		List<SummaryDTO> result = saleRepository.seachSalesByDate(startDate, finalDate);
+		Page<ReportDTO> result = repository.searchSalesReport(startDate, finalDate, name, pageable);
+		return result;
+	}
+
+	public List<SummaryDTO> seachSalesSummary(String minDate, String maxDate) {
+		LocalDate finalDate = convertFinalDate(maxDate);
+		LocalDate startDate = convertInitialDate(minDate, finalDate);
+
+		List<SummaryDTO> result = repository.seachSalesSummary(startDate, finalDate);
 		return result;
 	}
 
